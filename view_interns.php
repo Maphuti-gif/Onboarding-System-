@@ -13,10 +13,14 @@ if ($conn->connect_error) {
 }
 
 // Download logic only happens if a GET request with 'action' is set to 'download'
-if (isset($_GET['action']) && $_GET['action'] == 'download') {
+if (isset($_GET['action']) && $_GET['action'] === 'download') {
     // Fetch records from the database
     $sql = "SELECT name, dob, demographics, education, skills, languages, mobile, email, address, work_experience FROM interns";
     $result = $conn->query($sql);
+
+    if (!$result) {
+        die("Query failed: " . $conn->error);
+    }
 
     // Start buffering the output
     ob_start();
@@ -41,16 +45,16 @@ if (isset($_GET['action']) && $_GET['action'] == 'download') {
             if ($result->num_rows > 0) {
                 while ($row = $result->fetch_assoc()) {
                     echo "<tr>";
-                    echo "<td>" . $row['name'] . "</td>";
-                    echo "<td>" . $row['dob'] . "</td>";
-                    echo "<td>" . $row['demographics'] . "</td>";
-                    echo "<td>" . $row['education'] . "</td>";
-                    echo "<td>" . $row['skills'] . "</td>";
-                    echo "<td>" . $row['languages'] . "</td>";
-                    echo "<td>" . $row['mobile'] . "</td>";
-                    echo "<td>" . $row['email'] . "</td>";
-                    echo "<td>" . $row['address'] . "</td>";
-                    echo "<td>" . $row['work_experience'] . "</td>";
+                    echo "<td>" . htmlspecialchars($row['name']) . "</td>";
+                    echo "<td>" . htmlspecialchars($row['dob']) . "</td>";
+                    echo "<td>" . htmlspecialchars($row['demographics']) . "</td>";
+                    echo "<td>" . htmlspecialchars($row['education']) . "</td>";
+                    echo "<td>" . htmlspecialchars($row['skills']) . "</td>";
+                    echo "<td>" . htmlspecialchars($row['languages']) . "</td>";
+                    echo "<td>" . htmlspecialchars($row['mobile']) . "</td>";
+                    echo "<td>" . htmlspecialchars($row['email']) . "</td>";
+                    echo "<td>" . htmlspecialchars($row['address']) . "</td>";
+                    echo "<td>" . htmlspecialchars($row['work_experience']) . "</td>";
                     echo "</tr>";
                 }
             }
@@ -61,16 +65,19 @@ if (isset($_GET['action']) && $_GET['action'] == 'download') {
     $html = ob_get_clean(); // Get the HTML content from the buffer
 
     // Force download as an HTML file
-    header('Content-Type: application/html');
+    header('Content-Type: text/html');
     header('Content-Disposition: attachment; filename="interns_data.html"');
     echo $html;
     exit();
 }
 
-// Default page to display the table (no duplication now)
+// Default page to display the table
 $sql = "SELECT name, dob, demographics, education, skills, languages, mobile, email, address, work_experience FROM interns";
 $result = $conn->query($sql);
 
+if (!$result) {
+    die("Query failed: " . $conn->error);
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -118,18 +125,18 @@ $result = $conn->query($sql);
         <tbody>
             <?php
             if ($result->num_rows > 0) {
-                while($row = $result->fetch_assoc()) {
+                while ($row = $result->fetch_assoc()) {
                     echo "<tr>";
-                    echo "<td>" . $row['name'] . "</td>";
-                    echo "<td>" . $row['dob'] . "</td>";
-                    echo "<td>" . $row['demographics'] . "</td>";
-                    echo "<td>" . $row['education'] . "</td>";
-                    echo "<td>" . $row['skills'] . "</td>";
-                    echo "<td>" . $row['languages'] . "</td>";
-                    echo "<td>" . $row['mobile'] . "</td>";
-                    echo "<td>" . $row['email'] . "</td>";
-                    echo "<td>" . $row['address'] . "</td>";
-                    echo "<td>" . $row['work_experience'] . "</td>";
+                    echo "<td>" . htmlspecialchars($row['name']) . "</td>";
+                    echo "<td>" . htmlspecialchars($row['dob']) . "</td>";
+                    echo "<td>" . htmlspecialchars($row['demographics']) . "</td>";
+                    echo "<td>" . htmlspecialchars($row['education']) . "</td>";
+                    echo "<td>" . htmlspecialchars($row['skills']) . "</td>";
+                    echo "<td>" . htmlspecialchars($row['languages']) . "</td>";
+                    echo "<td>" . htmlspecialchars($row['mobile']) . "</td>";
+                    echo "<td>" . htmlspecialchars($row['email']) . "</td>";
+                    echo "<td>" . htmlspecialchars($row['address']) . "</td>";
+                    echo "<td>" . htmlspecialchars($row['work_experience']) . "</td>";
                     echo "</tr>";
                 }
             } else {
@@ -151,4 +158,3 @@ $result = $conn->query($sql);
 // Close connection
 $conn->close();
 ?>
-
